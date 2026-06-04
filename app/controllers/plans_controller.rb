@@ -24,13 +24,16 @@ class PlansController < ApplicationController
     @plan = Plan.new
   end
 
-  # TODO catch uniqueness exception and redo
   # POST /p.json
   def create
     @plan = Plan.new(plan_params)
-    @plan.add_ident
     @plan.user_id = current_user.id
-    unless @plan.save
+    saved = false
+    3.times do
+      @plan.add_ident
+      break if (saved = @plan.save)
+    end
+    unless saved
       render json: {status: 'failed', message: '创建失败，请稍后重试 !'}
     end
   end
@@ -51,15 +54,18 @@ class PlansController < ApplicationController
     to_list_sort = to_list.task_sort
     to_list_sort = to_list.build_task_sort if to_list_sort.nil?
     to_list_sort.sort = params[:to_sort].split(',').map(&:to_i)
+    from_list_sort = nil
     if params['from_list_id'].present?
       task = @plan.tasks.find(params['task_id'])
-      task.update_column(:list_id, params['to_list_id'])
+      task.update_column(:list_id, to_list.id)
       from_list = @plan.lists.find(params['from_list_id'])
       from_list_sort = from_list.task_sort
       from_list_sort = from_list.build_task_sort if from_list_sort.nil?
       from_list_sort.sort = params[:from_sort].split(',').map(&:to_i)
     end
-    unless to_list_sort.save && (from_list_sort.present? && from_list_sort.save)
+    saved = to_list_sort.save
+    saved &&= from_list_sort.save if from_list_sort.present?
+    unless saved
       render json: {status: 'failed', message: '更新失败，请稍后重试 !'}
     end
   end
