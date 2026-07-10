@@ -19,6 +19,11 @@ class Task < ActiveRecord::Base
   belongs_to :list
   belongs_to :user
 
+  validates :title, presence: true
+  validates :list,  presence: true
+  validates :plan,  presence: true
+  validates :user,  presence: true
+
   after_create :add_sort
   after_destroy :delete_sort
 

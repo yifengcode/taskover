@@ -18,6 +18,9 @@ class List < ActiveRecord::Base
   belongs_to :user
   has_one   :task_sort, class_name: 'Sort', as: :sortable, dependent: :destroy
 
+  validates :title, presence: true
+  validates :plan,  presence: true
+
   scope :with_color_tag, -> (color_tag) { where(color_tag: color_tag) }
 
   after_create :add_sort
