@@ -4,7 +4,7 @@ json.lists @lists do |list|
   json.(list, :id, :title, :color_tag)
   json.color_tag_class color_tag_class('panel-', list.color_tag)
   json.path "#{plan_list_path(@plan, list)}" # TODO remove path use list.id instead
-  sort = list.task_sort.nil? ? list.tasks.pluck(:id) : list.task_sort.sort
+  sort = list.task_sort.nil? ? list.tasks.map(&:id) : list.task_sort.sort
   tasks = list.tasks.sort_by{|e| sort.index(e.id)}
   tasks = tasks.group_by(&:status)
   json.tasks tasks[1] do |task|

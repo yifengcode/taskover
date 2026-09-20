@@ -5,8 +5,9 @@ class PlansController < ApplicationController
   # GET /p.json
   def index
     if json_request?
-      sort = current_user.plan_sort.nil? ? current_user.plans.pluck(:id) : current_user.plan_sort.sort
-      @plans = current_user.plans.sort_by{|e| sort.index(e.id)}
+      @plans = current_user.plans.to_a
+      sort = current_user.plan_sort.nil? ? @plans.map(&:id) : current_user.plan_sort.sort
+      @plans = @plans.sort_by{|e| sort.index(e.id)}
     end
   end
 
