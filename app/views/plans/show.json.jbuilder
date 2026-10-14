@@ -1,5 +1,7 @@
-json.(@plan, :title, :description)
+json.(@plan, :title, :description, :archived)
 json.new_list_path "#{plan_lists_path(@plan)}.json"
+json.archive_path "#{archive_plan_path(@plan)}.json"
+json.unarchive_path "#{unarchive_plan_path(@plan)}.json"
 json.lists @lists do |list|
   json.(list, :id, :title, :color_tag)
   json.color_tag_class color_tag_class('panel-', list.color_tag)

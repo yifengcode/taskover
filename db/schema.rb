@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_22_143624) do
+ActiveRecord::Schema.define(version: 2026_07_11_000000) do
 
   create_table "lists", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.text "title"
@@ -29,6 +29,8 @@ ActiveRecord::Schema.define(version: 2019_01_22_143624) do
     t.integer "color_tag", default: 0
     t.string "ident", null: false
     t.integer "user_id", null: false
+    t.boolean "archived", default: false, null: false
+    t.index ["archived"], name: "index_plans_on_archived"
   end
 
   create_table "sorts", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
