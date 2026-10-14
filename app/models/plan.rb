@@ -10,6 +10,7 @@
 #  color_tag   :integer          default(0)
 #  ident       :string(255)      not null
 #  user_id     :integer          not null
+#  archived    :boolean          default(false), not null
 #
 
 class Plan < ActiveRecord::Base
@@ -25,12 +26,26 @@ class Plan < ActiveRecord::Base
   validates :ident, uniqueness: true, presence: true
 
   scope :with_color_tag, -> (color_tag) { where(color_tag: color_tag) }
+  scope :active,   -> { where(archived: false) }
+  scope :archived_only, -> { where(archived: true) }
 
   after_create :add_sort
   after_destroy :delete_sort
 
   def to_param
     ident
+  end
+
+  def archived?
+    archived
+  end
+
+  def archive!
+    update(archived: true)
+  end
+
+  def unarchive!
+    update(archived: false)
   end
 
   def add_ident
