@@ -15,6 +15,9 @@
 
 class Task < ActiveRecord::Base
 
+  STATUS_CLOSED = 0
+  STATUS_OPEN = 1
+
   belongs_to :plan
   belongs_to :list
   belongs_to :user
@@ -29,11 +32,11 @@ class Task < ActiveRecord::Base
 
 
   def closed?
-    self.status == 0
+    status == STATUS_CLOSED
   end
 
   def opened?
-    self.status == 1
+    status == STATUS_OPEN
   end
 
   def add_sort
