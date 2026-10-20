@@ -63,4 +63,14 @@ class User < ApplicationRecord
     end
   end
 
+  # 返回用于界面展示的用户名称，优先使用 ident
+  def display_name
+    ident.presence || email.to_s.split('@').first
+  end
+
+  # 判断账号是否已完成邮箱确认，可用于后续权限校验
+  def active_for_auth?
+    confirmed_at.present?
+  end
+
 end
