@@ -39,8 +39,7 @@ class Plan < ActiveRecord::Base
 
   # generate a 8 length random ident with a cryptographically secure source
   def random_ident
-    chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    Array.new(8) { chars[SecureRandom.random_number(chars.size)] }.join
+    SecureRandom.alphanumeric(8)
   end
 
   def add_sort
