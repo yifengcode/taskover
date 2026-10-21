@@ -1,6 +1,9 @@
 require 'test_helper'
 
 class ListsControllerTest < ActionController::TestCase
+class ListsControllerTest < ActionController::TestCase
+class ListsControllerTest < ActionController::TestCase
+class ListsControllerTest < ActionController::TestCase
   setup do
     @list = lists(:one)
   end
