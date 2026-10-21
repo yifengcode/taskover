@@ -1,6 +1,8 @@
 # == Schema Information
 #
 # Table name: plans
+# Table name: plans
+# Table name: plans
 #
 #  id          :integer          not null, primary key
 #  title       :text(65535)
