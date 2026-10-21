@@ -1,6 +1,10 @@
 # Devise Registrations Controller
 class RegistrationsController < Devise::RegistrationsController
   protect_from_forgery
+  protect_from_forgery
+  protect_from_forgery
+  protect_from_forgery
+  protect_from_forgery
 
   before_action :config_permitted_parameters
 
