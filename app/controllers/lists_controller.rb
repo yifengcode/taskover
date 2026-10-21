@@ -1,11 +1,24 @@
 class ListsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_plan, only: [:new, :create, :update_sort, :update]
-  before_action :set_list, only: [:update, :destroy]
+  before_action :set_list, only: [:show, :update, :destroy]
 
   # GET /lists/new
   def new
     @list = @plan.lists.new
+  end
+
+  # GET /lists/1.json
+  def show
+    render json: {
+      status: 'success',
+      list: {
+        id: @list.id,
+        title: @list.title,
+        color_tag: @list.color_tag,
+        owner: current_user.display_name
+      }
+    }
   end
 
   # POST /lists.json
