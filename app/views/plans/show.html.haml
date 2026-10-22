@@ -3,8 +3,11 @@
   %span.plan_title{'v-text' => 'plan.title'}
   %span.plan_description{'v-text' => 'plan.description'}
   .plan-operations
+    %i.icon-inbox.has-tooltip{ title: '归档此计划项', 'v-show' => '!plan.archived', 'data-toggle' => 'tooltip', 'data-placement' => 'right', 'v-on:click' => 'archivePlan' }
+    %i.icon-inbox.has-tooltip{ title: '取消归档', 'v-show' => 'plan.archived', 'data-toggle' => 'tooltip', 'data-placement' => 'right', 'v-on:click' => 'unarchivePlan' }
     %i.icon-trash.has-tooltip.danger-opeartion{ title: '删除此计划项', 'data-toggle' => 'tooltip', 'data-placement' => 'right',
                                                 'data-toggle' => 'modal', 'data-target' => '.delete_plan_modal' }
+  %span.archived-tip{'v-show' => 'plan.archived'} 此计划已归档
   .delete_plan_modal.modal.fade{'aria-hidden' => 'true', :role => 'dialog', :tabindex => '-1'}
     .modal-dialog
       .modal-content
@@ -124,6 +127,9 @@
         title: '',
         description: '',
         new_list_path: '',
+        archived: false,
+        archive_path: '',
+        unarchive_path: '',
         lists: [{
           id: '',
           title: '',
@@ -250,6 +256,38 @@
           $('.delete_plan_modal').modal('hide')
           notifyTop(result.message)
           setTimeout(function(){window.location="/";}, 2000);
+        }
+        xhr.send()
+      },
+      archivePlan: function() {
+        var xhr = new XMLHttpRequest()
+        var self = this
+        xhr.open("PUT", this.plan.archive_path)
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+        xhr.onload = function () {
+          result = JSON.parse(xhr.responseText)
+          if (result.status == 'success') {
+            self.plan.archived = true
+            notifyTop(result.message)
+          } else {
+            notifyTop(result.message, 'danger')
+          }
+        }
+        xhr.send()
+      },
+      unarchivePlan: function() {
+        var xhr = new XMLHttpRequest()
+        var self = this
+        xhr.open("PUT", this.plan.unarchive_path)
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+        xhr.onload = function () {
+          result = JSON.parse(xhr.responseText)
+          if (result.status == 'success') {
+            self.plan.archived = false
+            notifyTop(result.message)
+          } else {
+            notifyTop(result.message, 'danger')
+          }
         }
         xhr.send()
       },

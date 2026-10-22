@@ -4,6 +4,20 @@
 
 // index styles
 
+.archived-switch{
+  text-align: right;
+  padding: 10px 0;
+  a{
+    cursor: pointer;
+    color: #666;
+    font-size: 13px;
+    &:hover{
+      color: #337ab7;
+      text-decoration: none;
+    }
+  }
+}
+
 #plans-list{
   a:hover{
     color: #666;
@@ -85,6 +99,12 @@
   &:hover .danger-opeartion{
     display: inline;
   }
+  .archived-tip{
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 12px;
+    color: #f0ad4e;
+  }
 }
 
 #plans-list {
@@ -95,6 +115,9 @@
     cursor: pointer;
     padding: 5px;
     display: none;
+  }
+  .modify-plan.icon-inbox {
+    right: 50px;
   }
   .plan-item {
     &:hover .modify-plan {
