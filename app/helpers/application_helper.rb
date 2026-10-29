@@ -5,7 +5,7 @@ module ApplicationHelper
   # TODO: User can create different color_tag to choose
 
   def color_tag_class(prefix, color_tag)
-    color_arr = ['gray','blue','green','red','yellow','qing']
+    color_arr = Plan::COLOR_TAG.keys
     "#{prefix}#{color_arr[color_tag]}"
   end
 
