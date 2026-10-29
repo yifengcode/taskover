@@ -1,4 +1,7 @@
 - title '我的计划项'
+.archived-switch
+  %a{'v-show' => '!showArchived', 'v-on:click' => 'showArchivedPlans()'} 查看已归档计划
+  %a{'v-show' => 'showArchived', 'v-on:click' => 'showActivePlans()'} 返回我的计划项
 .row#plans-list
   %draggable{':list' => "filterData", ':options' => "{ animation: 150, 'handle': '.plan-item' }", '@update' => 'updateSort'}
     .col-md-3{'v-for' => 'plan in filterData', ':key'=> 'plan.ident'}
@@ -9,16 +12,18 @@
               {{plan.title}}
             %p
               {{plan.description}}
-        %i.icon-pencil.has-tooltip.modify-plan{ title: '修改此计划项', 'v-on:click' => 'editPlan()' }
+        %i.icon-pencil.has-tooltip.modify-plan{ title: '修改此计划项', 'v-show' => '!showArchived', 'v-on:click' => 'editPlan()' }
+        %i.icon-inbox.has-tooltip.modify-plan{ title: '归档此计划项', 'v-show' => '!showArchived', 'v-on:click' => 'archivePlan(plan)' }
+        %i.icon-inbox.has-tooltip.modify-plan{ title: '取消归档', 'v-show' => 'showArchived', 'v-on:click' => 'unarchivePlan(plan)' }
       .bs-callout.edit-plan{':class' => 'plan.color_tag_class', ':value' => 'plan.color_tag'}
         = render 'plans/edit_form'
-  .col-md-3{ 'v-show' => 'newPlanField' }
+  .col-md-3{ 'v-show' => '!showArchived && newPlanField' }
     .bs-callout.bs-callout-add#add-plan-field
       = render 'plans/form'
     .add-plan-buttons
       %button.btn.btn-sm.btn-default{ :type => "button", 'v-on:click' => 'cancelPlan()' } 取消
       %button.btn.btn-sm.btn-primary{ :type => "button", 'v-on:click' => 'addPlan()' } 提交
-  .col-md-3{ 'v-show' => '!!!newPlanField' }
+  .col-md-3{ 'v-show' => '!showArchived && !!!newPlanField' }
     .bs-callout.bs-callout-add#add-plan-entry{ 'v-on:click' => 'newPlan()' }
       %i.icon-plus.bs-callout-add-icon
 
@@ -39,10 +44,12 @@
         description: '',
         color_tag: '',
         color_tag_class: '',
+        archived: false,
         path: ''
       }],
       newPlanField: false,
-      colorFilter: ''
+      colorFilter: '',
+      showArchived: false
     },
     created: function () {
       this.fetchData()
@@ -71,9 +78,50 @@
       fetchData: function () {
         var xhr = new XMLHttpRequest()
         var self = this
-        xhr.open('GET', PlanUrl)
+        var url = this.showArchived ? PlanUrl + '?archived=true' : PlanUrl
+        xhr.open('GET', url)
         xhr.onload = function () {
           self.plans = JSON.parse(xhr.responseText)
+        }
+        xhr.send()
+      },
+      showArchivedPlans: function () {
+        this.showArchived = true
+        this.fetchData()
+      },
+      showActivePlans: function () {
+        this.showArchived = false
+        this.fetchData()
+      },
+      archivePlan: function (plan) {
+        var xhr = new XMLHttpRequest()
+        var self = this
+        xhr.open('PUT', '/p/' + plan.ident + '/archive.json')
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+        xhr.onload = function () {
+          result = JSON.parse(xhr.responseText)
+          if (result.status == 'success') {
+            self.plans.splice(self.plans.indexOf(plan), 1)
+            notifyTop(result.message)
+          } else {
+            notifyTop(result.message, 'danger')
+          }
+        }
+        xhr.send()
+      },
+      unarchivePlan: function (plan) {
+        var xhr = new XMLHttpRequest()
+        var self = this
+        xhr.open('PUT', '/p/' + plan.ident + '/unarchive.json')
+        xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded")
+        xhr.onload = function () {
+          result = JSON.parse(xhr.responseText)
+          if (result.status == 'success') {
+            self.plans.splice(self.plans.indexOf(plan), 1)
+            notifyTop(result.message)
+          } else {
+            notifyTop(result.message, 'danger')
+          }
         }
         xhr.send()
       },
