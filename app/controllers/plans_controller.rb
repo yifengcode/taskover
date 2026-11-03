@@ -1,11 +1,13 @@
 class PlansController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_plan, only: [:show, :update, :destroy, :update_task_sort]
+  before_action :set_plan, only: [:show, :update, :destroy, :update_task_sort, :archive, :unarchive]
 
   # GET /p.json
+  # GET /p.json?archived=true
   def index
     if json_request?
-      @plans = current_user.plans.to_a
+      scope = params[:archived].to_s == 'true' ? current_user.plans.archived_only : current_user.plans.active
+      @plans = scope.to_a
       sort = current_user.plan_sort.nil? ? @plans.map(&:id) : current_user.plan_sort.sort
       @plans = @plans.sort_by{|e| sort.index(e.id)}
     end
@@ -84,6 +86,24 @@ class PlansController < ApplicationController
   def destroy
     @plan.destroy
     render json: {status: 'success', message: '删除成功，正在返回首页...'}
+  end
+
+  # PUT /p/xxxx/archive.json
+  def archive
+    if @plan.archive!
+      render json: {status: 'success', message: '计划已归档', archived: true}
+    else
+      render json: {status: 'failed', message: '归档失败，请稍后重试 !'}
+    end
+  end
+
+  # PUT /p/xxxx/unarchive.json
+  def unarchive
+    if @plan.unarchive!
+      render json: {status: 'success', message: '计划已取消归档', archived: false}
+    else
+      render json: {status: 'failed', message: '取消归档失败，请稍后重试 !'}
+    end
   end
 
   private
